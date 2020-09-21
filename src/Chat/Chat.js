@@ -12,12 +12,12 @@ class Chat extends Component {
     this.state = {
       shop: {},
       messages: [],
+      inputVal: '',
     };
   }
 
   componentDidMount() {
-    const defaultMessage = answersData.find((answer) => answer.tags.includes('DEFAULT'));
-    const messages = this.state.messages.concat(defaultMessage);
+    const messages = this.findAnwser('DEFAULT');
 
     setTimeout(() => {
       this.setState({
@@ -27,13 +27,56 @@ class Chat extends Component {
     }, 1000);
   }
 
+  findAnwser = (val) => {
+    const replyMessage = answersData.find((answer) => answer.tags.includes(val));
+    return this.state.messages.concat(replyMessage);
+  };
+
+  setCustomerInput = (event) => {
+    this.setState({
+      inputVal: event.target.value,
+    });
+  };
+
+  sendData = () => {
+    const { inputVal } = this.state;
+    const messages = this.state.messages.concat({
+      text: inputVal,
+      role: 'CUSTOMER',
+    });
+
+    setTimeout(() => {
+      this.setState({
+        messages,
+        inputVal: '',
+      });
+    }, 500);
+    this.shopRely(inputVal, messages);
+  };
+
+  shopRely = (question, originMessages) => {
+    const replyMessage = answersData.find((answer) => answer.tags.includes(question));
+    if (replyMessage !== undefined) {
+      const messages = originMessages.concat(replyMessage);
+      setTimeout(() => {
+        this.setState({
+          messages,
+        });
+      }, 1000);
+    }
+  };
+
   render() {
-    const { shop, messages } = this.state;
+    const { shop, messages, inputVal } = this.state;
     return (
       <main className="Chat">
         <ChatHeader shop={shop} />
         <ChatBox messages={messages} />
-        <ChatInput />
+        <ChatInput
+          onTextChange={this.setCustomerInput}
+          targetVal={inputVal}
+          sendData={this.sendData}
+        />
       </main>
     );
   }
