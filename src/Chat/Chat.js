@@ -46,15 +46,17 @@ class Chat extends Component {
     });
 
     setTimeout(() => {
-      this.setState({
-        messages,
-        inputVal: '',
-      });
+      this.setState(
+        {
+          messages,
+          inputVal: '',
+        },
+        this.showRely(inputVal, messages)
+      );
     }, 500);
-    this.shopRely(inputVal, messages);
   };
 
-  shopRely = (question, originMessages) => {
+  showRely = (question, originMessages) => {
     const replyMessage = answersData.find((answer) => answer.tags.includes(question));
     if (replyMessage !== undefined) {
       const messages = originMessages.concat(replyMessage);
